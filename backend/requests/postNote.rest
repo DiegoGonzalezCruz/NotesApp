@@ -1,0 +1,8 @@
+POST http://localhost:3001/api/notes
+Content-Type: application/json
+
+{
+    "content": "TEST JERE",
+    "important": true,
+    "userId": "61a7d3f5bdb669437099467d"
+}
