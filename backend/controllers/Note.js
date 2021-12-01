@@ -1,5 +1,6 @@
 const notesRouter = require('express').Router()
 const Note = require('../models/note')
+const User = require('../models/User')
 
 notesRouter.get('/', async (request, response) => {
     const notes = await Note.find({})
@@ -19,12 +20,17 @@ notesRouter.get('/:id', async (request, response) => {
 notesRouter.post('/', async (request, response) => {
     const body = request.body
 
+    
+
     const note = new Note({
         content: body.content,
-        important: body.important || false,
-        date: new Date()
+        important: body.important === undefined ? false : body.important,
+        date: new Date(),
+
     })
     const savedNote = await note.save()
+
+
     response.json(savedNote)
 
 })
@@ -51,4 +57,3 @@ notesRouter.put('/:id', async (request, response, next) => {
 
 module.exports = notesRouter
 
-//TODO Optimizing the beforeEach function
