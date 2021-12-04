@@ -9,17 +9,17 @@ const User = require('../models/User')
 
 
 //...
-beforeEach(async () => {
-    await User.deleteMany({})
-
-    const passwordHash = await bcrypt.hash('sekret', 10)
-    const user = new User({ username: 'root', passwordHash: passwordHash })
-
-    await user.save()
-})
 
 describe('when there is initially one user in db', () => {
+    beforeEach(async () => {
+        await User.deleteMany({})
     
+        const passwordHashed = await bcrypt.hash('sekret', 10)
+        const user = new User({ username: 'root', passwordHash: passwordHashed })
+    
+        await user.save()
+    })
+
     test('creation succeeds with a fresh username', async () => {
         const usersAtStart = await helper.usersInDb()
 

@@ -74,26 +74,29 @@ describe('viewing a specific note', () => {
 })
 
 describe('addition of a new note', () => {
-    test('a valid note can be added', async () => {
+    test('succeeds with valid data', async () => {
         const newNote = {
             content: 'async/await simplifies making async calls',
             important: true,
         }
+
         await api
             .post('/api/notes')
             .send(newNote)
             .expect(200)
             .expect('Content-Type', /application\/json/)
 
+
         const notesAtEnd = await helper.notesInDb()
-        expect(notesAtEnd).toHaveLength(helper.initialNotes.length + 1)
+        expect(notesAtEnd.length).toBe(helper.initialNotes.length + 1)
 
         const contents = notesAtEnd.map(n => n.content)
         expect(contents).toContain(
             'async/await simplifies making async calls'
         )
     })
-    test('note without content is not added', async () => {
+
+    test('fails with status code 400 if data invalid', async () => {
         const newNote = {
             important: true
         }
@@ -105,9 +108,8 @@ describe('addition of a new note', () => {
 
         const notesAtEnd = await helper.notesInDb()
 
-        expect(notesAtEnd).toHaveLength(helper.initialNotes.length)
+        expect(notesAtEnd.length).toBe(helper.initialNotes.length)
     })
-
 })
 
 describe('deletion of a note', () => {
@@ -130,13 +132,6 @@ describe('deletion of a note', () => {
         expect(contents).not.toContain(noteToDelete.content)
     })
 })
-
-
-
-
-
-
-
 
 
 afterAll(() => {
