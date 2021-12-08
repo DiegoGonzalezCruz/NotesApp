@@ -5,14 +5,17 @@ const app = require('../App')
 const api = supertest(app)
 
 const Note = require('../models/Note')
+const User = require('../models/User')
 
-beforeEach(async () => {
-    await Note.deleteMany({})
 
-    await Note.insertMany(helper.initialNotes)
-})
 
 describe('when there is initially some notes saved', () => {
+    beforeEach(async () => {
+        await Note.deleteMany({})
+
+        await Note.insertMany(helper.initialNotes)
+    })
+
     test('notes are returned as json', async () => {
         await api
             .get('/api/notes')
@@ -78,6 +81,7 @@ describe('addition of a new note', () => {
         const newNote = {
             content: 'async/await simplifies making async calls',
             important: true,
+            userId: '61ab56a9c086a74c9c593804',
         }
 
         await api
@@ -111,6 +115,7 @@ describe('addition of a new note', () => {
         expect(notesAtEnd.length).toBe(helper.initialNotes.length)
     })
 })
+
 
 describe('deletion of a note', () => {
     test('a note can be deleted', async () => {
