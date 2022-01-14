@@ -1,25 +1,24 @@
 import axios from 'axios'
 const baseUrl = '/api/notes'
 
+let token = null
+
+const setToken = newToken => {
+  token = `bearer ${newToken}`
+}
+
 const getAll = () => {
   const request = axios.get(baseUrl)
   return request.then(response => response.data)
 }
+const create = async newObject => {
 
-/* const getAll = () => {
-  const request = axios.get(baseUrl)
-  const nonExisting = {
-    id: 10000,
-    content: 'This note is not saved to server',
-    date: '2019-05-30T17:30:31.098Z',
-    important: true,
+  const config = {
+    headers: { Authorization: token },
   }
-  return request.then(response => response.data.concat(nonExisting))
-} */
+  const response = await axios.post(baseUrl, newObject, config)
+  return response.data
 
-const create = newObject => {
-  const request = axios.post(baseUrl, newObject)
-  return request.then(response => response.data)
 }
 
 const update = (id, newObject) => {
@@ -27,7 +26,8 @@ const update = (id, newObject) => {
   return request.then(response => response.data)
 }
 
+
 const noteService = {
-  getAll, create, update
+  getAll, create, update, setToken
 }
 export default noteService

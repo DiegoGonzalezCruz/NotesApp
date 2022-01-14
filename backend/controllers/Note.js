@@ -11,7 +11,6 @@ const getTokenFrom = request => {
     return null
 }
 
-
 notesRouter.get('/', async (request, response) => {
     const notes = await Note
         .find({}).populate('user', { username: 1, name: 1 })
@@ -31,6 +30,11 @@ notesRouter.get('/:id', async (request, response) => {
 
 notesRouter.post('/', async (request, response) => {
     const body = request.body
+    console.log(body, 'body')
+
+    if (body.content.length < 5) {
+        return response.status(400).json({ error: 'Content must be at least 5 characters' })
+    }
 
     const token = getTokenFrom(request)
     const decodedToken = jwt.verify(token, process.env.SECRET)
@@ -38,7 +42,6 @@ notesRouter.post('/', async (request, response) => {
         return response.status(401).json({ error: 'token missing or invalid' })
     }
     const user = await User.findById(decodedToken.id)
-
 
     const note = new Note({
         content: body.content,
@@ -69,7 +72,7 @@ notesRouter.put('/:id', async (request, response, next) => {
         important: body.important,
     }
 
-    await Note.findByIdAndUpdate(request.params.id, note, { new: true })
+    const updatedNote = await Note.findByIdAndUpdate(request.params.id, note, { new: true })
     response.json(updatedNote)
 
 
