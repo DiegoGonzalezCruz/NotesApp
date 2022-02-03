@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+
 import Note from './components/Note'
 import Notification from './components/Notification'
 import Footer from './components/Footer'
-
-import noteService from './services/notes'
-import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import NoteForm from './components/NoteForm'
 
+import noteService from './services/notes'
+import loginService from './services/login'
 
 const App = () => {
   const [notes, setNotes] = useState([])
@@ -18,6 +18,9 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+
+  const noteFormRef = useRef()
+
 
   useEffect(() => {
     noteService
@@ -45,7 +48,7 @@ const App = () => {
       .then(returnedNote => {
         setNotes(notes.map(note => note.id !== id ? note : returnedNote))
       })
-      .catch(error => {
+      .catch(() => {
         setErrorMessage(
           `Note '${note.content}' was already removed from server`
         )
@@ -56,6 +59,7 @@ const App = () => {
   }
 
   const addNote = (noteObject) => {
+    noteFormRef.current.toggleVisibility()
     noteService
       .create(noteObject)
       .then(returnedNote => {
@@ -95,9 +99,7 @@ const App = () => {
   }
 
   const logOut = () =>
-  (
-    <button onClick={handleLogout} type="submit">Log Out</button>
-  )
+    (<button onClick={handleLogout} type="submit">Log Out</button>)
 
   const loginForm = () => (
     <Togglable buttonLabel="log in">
@@ -112,7 +114,7 @@ const App = () => {
   )
 
   const noteForm = () => (
-    <Togglable buttonLabel="new note">
+    <Togglable buttonLabel="New Note" ref={noteFormRef}>
       <NoteForm
         createNote={addNote}
       />
@@ -142,13 +144,16 @@ const App = () => {
         </button>
       </div>
       <ul>
-        {notesToShow.map(note =>
-          <Note
-            key={note.id}
-            note={note}
-            toggleImportance={() => toggleImportanceOf(note.id)}
-          />
-        )}
+        {
+          user === null ? '' :
+            notesToShow.map(note =>
+              <Note
+                key={note.id}
+                note={note}
+                toggleImportance={() => toggleImportanceOf(note.id)}
+              />
+            )
+        }
       </ul>
 
       <Footer />
